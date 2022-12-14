@@ -2,11 +2,14 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { QueryClient, setupBankExtension, Coin } from "@cosmjs/stargate";
 import util from "util";
-import { chains } from "chain-registry";
+import { chains, assets } from "chain-registry";
 import fs from "fs";
+import request from "axios";
 
 // const
 const APOLLO_CW3_ID = 1;
+const ASSET_LIST_URL =
+  "https://github.com/osmosis-labs/assetlists/blob/main/osmosis-1/osmosis-1.assetlist.json";
 const USDC_IBC =
   "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
 
@@ -127,4 +130,5 @@ const main = async () => {
 };
 
 // run
-main();
+console.log(assets);
+//main();
