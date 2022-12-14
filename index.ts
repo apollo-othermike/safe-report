@@ -7,15 +7,18 @@ import fs from "fs";
 
 // const
 const APOLLO_CW3_ID = 1;
+const USDC_IBC =
+  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
 
 // types
 type SafeContract = {
   address: string;
-  balance: Coin;
+  all_balances: Coin[];
 };
 
 type Totals = {
   wallet_count: number;
+  usdc: number;
   uosmo: number;
 };
 
@@ -31,6 +34,7 @@ let contract_store: SafeContract[] = [];
 let totals = {
   wallet_count: 0,
   uosmo: 0,
+  usdc: 0,
 } as Totals;
 
 // utils
@@ -77,16 +81,26 @@ const fetch_balances = async (
 
     // sleep for 500ms - otherwise cloudflare gets angry
     await new Promise((res) => {
-      setTimeout(res, 500);
+      setTimeout(res, 1000);
     });
 
+    // todo loop/map all native tokens better.
+    // fetch all balances then generate totals later
     try {
-      const balance = await bank_extension.bank.balance(address, "uosmo");
-      console.log("balance:", balance);
-      totals.uosmo += Number(balance.amount);
+      const all_balances = await bank_extension.bank.allBalances(address);
+      const uosmo_balance =
+        all_balances.find((b) => b.denom === "uosmo") ||
+        ({ amount: "0" } as Coin);
+      const usdc_balance =
+        all_balances.find((b) => b.denom === USDC_IBC) ||
+        ({ amount: "0" } as Coin);
+      //console.log("all_balances", all_balances);
+      console.log("usdc balance", usdc_balance);
+      totals.uosmo += Number(uosmo_balance.amount);
+      totals.usdc += Number(usdc_balance.amount);
       contract_store.push({
         address,
-        balance,
+        all_balances,
       });
     } catch (error) {
       console.log(error);
