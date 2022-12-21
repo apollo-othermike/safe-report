@@ -130,5 +130,5 @@ const main = async () => {
 };
 
 // run
-console.log(assets);
-//main();
+//console.log(assets);
+main();
